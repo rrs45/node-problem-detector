@@ -79,7 +79,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 
 // validatePluginConfig validates whether the plugin configuration.
 func validatePluginConfig(cfg map[string]string) error {
-	if cfg[timestampKey] == "" {
+	if cfg[checkCondition] == "" {
 		return fmt.Errorf("unexpected empty timestamp regular expression")
 	}
 	if cfg[messageKey] == "" {
