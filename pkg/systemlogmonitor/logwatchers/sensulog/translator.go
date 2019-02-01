@@ -40,7 +40,7 @@ const (
 	// timestampFormatKey is the key of timestamp format string in the plugin configuration.
 	timestampFormatKey = "timestampFormat"
 )
-
+*/
 func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	if err := validatePluginConfig(pluginConfig); err != nil {
 		glog.Errorf("Failed to validate plugin configuration %+v: %v", pluginConfig, err)
