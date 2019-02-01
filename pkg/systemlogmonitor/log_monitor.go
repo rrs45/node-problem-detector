@@ -102,11 +102,14 @@ func (l *logMonitor) monitorLoop() {
 }
 
 // parseLog parses one log line.
+//EDIT: here we need to match config file for sensu
 func (l *logMonitor) parseLog(log *logtypes.Log) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
+	//EDIT: log has what?
 	l.buffer.Push(log)
 	for _, rule := range l.config.Rules {
+		//EDIT: need to match json field for level
 		matched := l.buffer.Match(rule.Pattern)
 		if len(matched) == 0 {
 			continue
