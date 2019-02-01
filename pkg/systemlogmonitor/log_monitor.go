@@ -110,7 +110,7 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 	l.buffer.Push(log)
 	for _, rule := range l.config.Rules {
 		//EDIT: need to match json field for level
-		matched := l.buffer.Match(rule.Pattern)
+		matched := l.buffer.JsonMatch(rule.Pattern)
 		if len(matched) == 0 {
 			continue
 		}
