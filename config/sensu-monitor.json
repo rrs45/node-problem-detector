@@ -6,11 +6,12 @@
 	"bufferSize": 10,
 	"source": "sensu-monitor",
 	"conditions": [
-    {
-      "type": "SensuChecks",
-      "reason": "NoFailures",
-      "message": "All checks passed"
-  ],
+    		{
+      			"type": "SensuChecks",
+     			"reason": "NoFailures",
+      			"message": "All checks passed"
+		}
+  	],
 	"rules": [
 		{
 			"type": "permanent",
