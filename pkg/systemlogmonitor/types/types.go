@@ -31,7 +31,7 @@ type Log struct {
 type SensuLog struct {
 	Timestamp time.Time
 	Check     string
-	output    string
+	Output    string
 }	
 	
 type SensuJsonLog struct {
