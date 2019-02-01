@@ -14,7 +14,7 @@
 	"rules": [
 		{
 			"type": "permanent",
-      "condition": "SensuChecks",
+      			"condition": "SensuChecks",
 			"reason": "ChecksFailed",
 			"level": ["critical", "warn"]
 		}
