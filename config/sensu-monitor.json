@@ -1,7 +1,7 @@
 {
 	"plugin": "sensulog",
 	"pluginConfig": {
-		"checks": ""
+		"checks": "check_docker_device_mapper"
 	},
 	},
 	"logPath": "/var/log/sensu/sensu.log",
