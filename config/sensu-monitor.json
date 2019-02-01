@@ -17,7 +17,7 @@
 			"type": "permanent",
       			"condition": "SensuChecks",
 			"reason": "ChecksFailed",
-			"level": ["critical", "warn"]
+			"pattern": ["critical", "warn"]
 		}
 	]
 }
