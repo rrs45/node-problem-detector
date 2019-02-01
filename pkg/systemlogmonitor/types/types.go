@@ -28,6 +28,34 @@ type Log struct {
 	Message   string
 }
 
+type SensuLog struct {
+    Timestamp string `json:"timestamp"`
+    Level     string `json:"level"`
+    Message   string `json:"message"`
+    Payload   struct {
+        Client string `json:"client"`
+        Check  struct {
+            Command     string   `json:"command"`
+            Contacts    []string `json:"contacts"`
+            Handlers    []string `json:"handlers"`
+            Info        string   `json:"info"`
+            Occurrences int      `json:"occurrences"`
+            Owner       string   `json:"owner"`
+            Refresh     int      `json:"refresh"`
+            Runbook     string   `json:"runbook"`
+            Slack       string   `json:"slack"`
+            Standalone  bool     `json:"standalone"`
+            Timeout     int      `json:"timeout"`
+            Name        string   `json:"name"`
+            Issued      int      `json:"issued"`
+            Executed    int      `json:"executed"`
+            Duration    float64  `json:"duration"`
+            Output      string   `json:"output"`
+            Status      int      `json:"status"`
+        } `json:"check"`
+    } `json:"payload"`
+}
+
 // Rule describes how log monitor should analyze the log.
 type Rule struct {
 	// Type is the type of matched problem.
