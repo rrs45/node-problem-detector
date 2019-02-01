@@ -1,5 +1,8 @@
 {
 	"plugin": "sensulog",
+	"pluginConfig": {
+		"checks": ""
+	},
 	},
 	"logPath": "/var/log/sensu/sensu.log",
 	"lookback": "5m",
