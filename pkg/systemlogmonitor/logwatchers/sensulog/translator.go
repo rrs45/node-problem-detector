@@ -24,8 +24,8 @@ import (
 
 // translator translates log line into internal log type based on user defined
 // regular expression.
-type translator struct {
-	timestampRegexp *regexp.Regexp
+/*type translator struct {
+	checks 
 	messageRegexp   *regexp.Regexp
 	timestampFormat string
 }
@@ -76,7 +76,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 		Message:   message,
 	}, nil
 }
-
+*/
 // validatePluginConfig validates whether the plugin configuration.
 func validatePluginConfig(cfg map[string]string) error {
 	if cfg[checkCondition] == "" {
@@ -93,9 +93,10 @@ func validatePluginConfig(cfg map[string]string) error {
 
 // formalizeTimestamp formalizes the timestamp. We need this because some log doesn't contain full
 // timestamp, e.g. filelog.
-func formalizeTimestamp(t time.Time) time.Time {
+/*func formalizeTimestamp(t time.Time) time.Time {
 	if t.Year() == 0 {
 		t = t.AddDate(time.Now().Year(), 0, 0)
 	}
 	return t
 }
+*/
