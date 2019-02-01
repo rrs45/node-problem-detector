@@ -66,25 +66,9 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	}
 }
 	
-func (t *translator) translate(line string) (*logtypes.Log, error) {
-	// Parse timestamp.
-	matches := t.timestampRegexp.FindStringSubmatch(line)
-	if len(matches) == 0 {
-		return nil, fmt.Errorf("no timestamp found in line %q with regular expression %v", line, t.timestampRegexp)
-	}
-	timestamp, err := time.ParseInLocation(t.timestampFormat, matches[len(matches)-1], time.Local)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
-	}
-	// Formalize the timestamp.
-	timestamp = formalizeTimestamp(timestamp)
-	// Parse message.
-	matches = t.messageRegexp.FindStringSubmatch(line)
-	if len(matches) == 0 {
-		return nil, fmt.Errorf("no message found in line %q with regular expression %v", line, t.messageRegexp)
-	}
-	message := matches[len(matches)-1]
-	return &logtypes.Log{
+func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
+	//TODO
+	return &logtypes.SensuLog{
 		Timestamp: timestamp,
 		Message:   message,
 	}, nil
