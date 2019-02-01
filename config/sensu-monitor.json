@@ -1,0 +1,22 @@
+{
+	"plugin": "sensulog",
+	},
+	"logPath": "/var/log/sensu/sensu.log",
+	"lookback": "5m",
+	"bufferSize": 10,
+	"source": "sensu-monitor",
+	"conditions": [
+    {
+      "type": "SensuChecks",
+      "reason": "NoFailures",
+      "message": "All checks passed"
+  ],
+	"rules": [
+		{
+			"type": "permanent",
+      "condition": "SensuChecks",
+			"reason": "ChecksFailed",
+			"level": ["critical", "warn"]
+		}
+	]
+}
