@@ -22,37 +22,50 @@ import (
 	"github.com/golang/glog"
 )
 
-// translator translates log line into internal log type based on user defined
-// regular expression.
-/*type translator struct {
-	checks 
-	messageRegexp   *regexp.Regexp
-	timestampFormat string
+// translator translates sensu log line into internal log type based on user defined
+// translate line and return logtypes.SensuLog
+type SensuJsonLog struct {
+    Timestamp string `json:"timestamp"`
+    Level     string `json:"level"`
+    Message   string `json:"message"`
+    Payload   struct {
+        Client string `json:"client"`
+        Check  struct {
+            Command     string   `json:"command"`
+            Contacts    []string `json:"contacts"`
+            Handlers    []string `json:"handlers"`
+            Info        string   `json:"info"`
+            Occurrences int      `json:"occurrences"`
+            Owner       string   `json:"owner"`
+            Refresh     int      `json:"refresh"`
+            Runbook     string   `json:"runbook"`
+            Slack       string   `json:"slack"`
+            Standalone  bool     `json:"standalone"`
+            Timeout     int      `json:"timeout"`
+            Name        string   `json:"name"`
+            Issued      int      `json:"issued"`
+            Executed    int      `json:"executed"`
+            Duration    float64  `json:"duration"`
+            Output      string   `json:"output"`
+            Status      int      `json:"status"`
+        } `json:"check"`
+    } `json:"payload"`
 }
 
-const (
-	// NOTE that we support submatch for both timestamp and message regular expressions. When
-	// there are multiple matches returned by submatch, only **the last** is used.
-	// timestampKey is the key of timestamp regular expression in the plugin configuration.
-	timestampKey = "timestamp"
-	// messageKey is the key of message regular expression in the plugin configuration.
-	messageKey = "message"
-	// timestampFormatKey is the key of timestamp format string in the plugin configuration.
-	timestampFormatKey = "timestampFormat"
-)
-*/
+type translator struct {
+	sensuchecks string
+}
+
 func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	if err := validatePluginConfig(pluginConfig); err != nil {
 		glog.Errorf("Failed to validate plugin configuration %+v: %v", pluginConfig, err)
 	}
+	
 	return &translator{
-		timestampRegexp: regexp.MustCompile(pluginConfig[timestampKey]),
-		messageRegexp:   regexp.MustCompile(pluginConfig[messageKey]),
-		timestampFormat: pluginConfig[timestampFormatKey],
+		sensuchecks: pluginConfig[checks]
 	}
 }
-
-// translate translates the log line into internal type.
+	
 func (t *translator) translate(line string) (*logtypes.Log, error) {
 	// Parse timestamp.
 	matches := t.timestampRegexp.FindStringSubmatch(line)
@@ -76,27 +89,12 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 		Message:   message,
 	}, nil
 }
-*/
-// validatePluginConfig validates whether the plugin configuration.
+
 func validatePluginConfig(cfg map[string]string) error {
-	if cfg[checkCondition] == "" {
-		return fmt.Errorf("unexpected empty timestamp regular expression")
+	if cfg[checks] == "" {
+		return fmt.Errorf("unexpected empty checks")
 	}
-	if cfg[messageKey] == "" {
-		return fmt.Errorf("unexpected empty message regular expression")
-	}
-	if cfg[timestampFormatKey] == "" {
-		return fmt.Errorf("unexpected empty timestamp format string")
-	}
+	
 	return nil
 }
 
-// formalizeTimestamp formalizes the timestamp. We need this because some log doesn't contain full
-// timestamp, e.g. filelog.
-/*func formalizeTimestamp(t time.Time) time.Time {
-	if t.Year() == 0 {
-		t = t.AddDate(time.Now().Year(), 0, 0)
-	}
-	return t
-}
-*/
