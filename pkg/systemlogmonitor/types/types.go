@@ -29,6 +29,12 @@ type Log struct {
 }
 
 type SensuLog struct {
+	Timestamp time.Time
+	Check     string
+	output    string
+}	
+	
+type SensuJsonLog struct {
     Timestamp string `json:"timestamp"`
     Level     string `json:"level"`
     Message   string `json:"message"`
