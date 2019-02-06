@@ -86,8 +86,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
 	}
-	// Formalize the timestamp.
-	timestamp = formalizeTimestamp(timestamp)
+	
 	// Set message field to sensu check name and severity
 	message := sensulog.Level + ':' + sensulog.Payload.Check.Name
 	return &logtypes.Log{
@@ -106,13 +105,3 @@ func validatePluginConfig(cfg map[string]string) error {
 	
 	return nil
 }
-
-// formalizeTimestamp formalizes the timestamp. We need this because some log doesn't contain full
-// timestamp, e.g. filelog.
-func formalizeTimestamp(t time.Time) time.Time {
-	if t.Year() == 0 {
-		t = t.AddDate(time.Now().Year(), 0, 0)
-	}
-	return t
-}
-
