@@ -76,7 +76,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	byt := []byte(line)
 	err := json.Unmarshal(byt, &sensulog)
 	if err != nil {
-		fmt.Errorf("failed to unmarshal line %q", line)
+		return nil, fmt.Errorf("failed to unmarshal line ")
 	} else {
 		glog.Infof("Successfully unmarshaled line %q", line)
 	}
