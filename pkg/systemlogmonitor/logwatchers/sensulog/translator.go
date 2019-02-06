@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+	"encoding/json"
 
 	logtypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/types"
 
@@ -70,15 +71,25 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 
 // translate translates the log line into internal type.
 func (t *translator) translate(line string) (*logtypes.Log, error) {
+	// Unmarshal Json line
+	var sensulog SensuJsonLog
+	byt := []byte(line)
+	err := json.Unmarshal(byt, &sensulog)
+	if err != nil {
+		fmt.Errorf("failed to unmarshal line %q", line)
+	} else {
+		glog.Infof("Successfully unmarshaled line %q", line)
+	}
+	
 	// Parse timestamp.
-	timestamp, err := time.ParseInLocation(t.timestampFormat, SensuJsonLog.Timestamp, time.Local)
+	timestamp, err := time.ParseInLocation(t.timestampFormat, sensulog.Timestamp, time.Local)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
 	}
 	// Formalize the timestamp.
 	timestamp = formalizeTimestamp(timestamp)
 	// Set message field to sensu check name and severity
-	message := SensuJsonLog.Level + ':' + SensuJsonLog.Payload.Check.Name
+	message := sensulog.Level + ':' + sensulog.Payload.Check.Name
 	return &logtypes.Log{
 		Timestamp: timestamp,
 		Message:   message,
