@@ -106,7 +106,7 @@ func (l *logMonitor) monitorLoop() {
 func (l *logMonitor) parseLog(log *logtypes.Log) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
-	//EDIT: log has what?
+	
 	l.buffer.Push(log)
 	for _, rule := range l.config.Rules {
 		//EDIT: need to match json field for level
