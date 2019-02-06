@@ -68,8 +68,8 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	
 func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
 	//TODO
-	return &logtypes.SensuLog{
-		Timestamp: timestamp,
+	return &logtypes.Log{
+		Timestamp: SensuJsonLog.Timestamp,
 		Message:   message,
 	}, nil
 }
