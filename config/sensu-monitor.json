@@ -1,7 +1,9 @@
 {
 	"plugin": "sensulog",
 	"pluginConfig": {
-		"checks": "check_docker_device_mapper"
+		"checks": "check_docker_device_mapper",
+		"message": "Payload.Check.Name"
+		"timestampFormat": "TimeStamp"
 	},
 	},
 	"logPath": "/var/log/sensu/sensu.log",
