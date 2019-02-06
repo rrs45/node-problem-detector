@@ -54,6 +54,7 @@ type SensuJsonLog struct {
 
 type translator struct {
 	sensuchecks string
+	timestampFormat string
 }
 
 func newTranslatorOrDie(pluginConfig map[string]string) *translator {
@@ -62,23 +63,45 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	}
 	
 	return &translator{
-		sensuchecks: pluginConfig[checks]
+		sensuchecks: pluginConfig[checks],
+		timestampFormat: pluginConfig[timestampFormatKey],
 	}
 }
-	
-func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
-	//TODO
+
+// translate translates the log line into internal type.
+func (t *translator) translate(line string) (*logtypes.Log, error) {
+	// Parse timestamp.
+	timestamp, err := time.ParseInLocation(t.timestampFormat, SensuJsonLog.Timestamp, time.Local)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
+	}
+	// Formalize the timestamp.
+	timestamp = formalizeTimestamp(timestamp)
+	// Set message field to sensu check name and severity
+	message := SensuJsonLog.Level + ':' + SensuJsonLog.Payload.Check.Name
 	return &logtypes.Log{
-		Timestamp: SensuJsonLog.Timestamp,
+		Timestamp: timestamp,
 		Message:   message,
 	}, nil
 }
 
 func validatePluginConfig(cfg map[string]string) error {
+	if cfg[timestampKey] == "" {
+		return fmt.Errorf("unexpected empty timestamp regular expression")
+	}
 	if cfg[checks] == "" {
 		return fmt.Errorf("unexpected empty checks")
 	}
 	
 	return nil
+}
+
+// formalizeTimestamp formalizes the timestamp. We need this because some log doesn't contain full
+// timestamp, e.g. filelog.
+func formalizeTimestamp(t time.Time) time.Time {
+	if t.Year() == 0 {
+		t = t.AddDate(time.Now().Year(), 0, 0)
+	}
+	return t
 }
 
