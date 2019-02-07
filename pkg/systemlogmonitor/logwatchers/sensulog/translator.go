@@ -87,8 +87,8 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
 	}
-	// Parse sensu check
-	for c := range sensuchecks {
+	// Loop through all checks and compare
+	for c := range strings.Split(sensuchecks, ",") {
 		if sensulog.Paylod.Check.Name == c {
 			message := sensulog.Paylod.Check.Output
 		}
