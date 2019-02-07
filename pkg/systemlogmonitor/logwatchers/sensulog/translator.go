@@ -17,6 +17,7 @@ import (
 	"regexp"
 	"time"
 	"encoding/json"
+	"strings"
 
 	logtypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/types"
 
@@ -86,9 +87,13 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
 	}
-	
-	// Set message field to sensu check name and severity
-	message := sensulog.Level + ':' + sensulog.Payload.Check.Name
+	// Parse sensu check
+	for c := range sensuchecks {
+		if sensulog.Paylod.Check.Name == c {
+			message := sensulog.Paylod.Check.Output
+		}
+	}
+
 	return &logtypes.Log{
 		Timestamp: timestamp,
 		Message:   message,
