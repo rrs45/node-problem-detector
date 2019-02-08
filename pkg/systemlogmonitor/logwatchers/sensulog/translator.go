@@ -87,13 +87,15 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
 	}
+	messsage := []string
 	// Loop through all checks and compare
 	for c := range strings.Split(sensuchecks, ",") {
 		if sensulog.Paylod.Check.Name == c {
+			//need to apped all matched checks
 			message := sensulog.Paylod.Check.Output
 		}
 	}
-
+	
 	return &logtypes.Log{
 		Timestamp: timestamp,
 		Message:   message,
