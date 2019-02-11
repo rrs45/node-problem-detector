@@ -92,7 +92,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	for c := range strings.Split(sensuchecks, ",") {
 		if sensulog.Paylod.Check.Name == c {
 			//need to apped all matched checks
-			message := sensulog.Paylod.Check.Output
+			message := append(message, "[" + c ">>" + sensulog.Paylod.Check.Output + "]")
 		}
 	}
 	
