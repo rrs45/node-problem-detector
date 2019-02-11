@@ -71,6 +71,9 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 }
 
 // translate translates the log line into internal type.
+// match check names
+// match output for OK/CRIT/WARN
+// Send line
 func (t *translator) translate(line string) (*logtypes.Log, error) {
 	// Unmarshal Json line
 	var sensulog SensuJsonLog
