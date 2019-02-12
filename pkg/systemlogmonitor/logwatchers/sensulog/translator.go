@@ -95,6 +95,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	}
 	
 	checks_list := strings.Split(t.sensuchecks, ",")
+	var message string
 	// Loop through all checks and compare
 	for i := range checks_list {
 		if sensulog.Payload.Check.Name == checks_list[i]{
