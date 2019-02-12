@@ -91,11 +91,11 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	// Parse timestamp.
 	timestamp, err := time.ParseInLocation(t.timestampFormat, sensulog.Timestamp, time.Local)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse timestamp %q: %v", matches[len(matches)-1], err)
+		return nil, fmt.Errorf("failed to parse timestamp %q: %v", sensulog.Timestamp, err)
 	}
 	
 	// Loop through all checks and compare
-	for c := range strings.Split(sensuchecks, ",") {
+	for c := range strings.Split(t.sensuchecks, ",") {
 		if sensulog.Paylod.Check.Name == c {
 			//need to apped all matched checks
 			message :=  "[" + c + ">>" + sensulog.Paylod.Check.Output + "]"
