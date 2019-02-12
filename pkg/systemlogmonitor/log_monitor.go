@@ -115,12 +115,15 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 		if len(matched) > 0 {
 			trigger := true
 			status := l.generateSensuStatus(matched, trigger)
+			glog.Infof("New status generated: %+v", status)
+			l.output <- status
 		} else {
 			trigger := false
 			status := l.generateSensuStatus(matched, trigger)
+			glog.Infof("New status generated: %+v", status)
+			l.output <- status
 		}
-		glog.Infof("New status generated: %+v", status)
-		l.output <- status
+	
 		
 	} else {
 	for _, rule := range l.config.Rules {
