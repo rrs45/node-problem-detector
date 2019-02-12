@@ -70,7 +70,7 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	}
 	
 	return &translator{
-		sensuchecks: pluginConfig[sensuchecks],
+		sensuchecks: pluginConfig[checks],
 		timestampFormat: pluginConfig[timestampFormatKey],
 	}
 }
