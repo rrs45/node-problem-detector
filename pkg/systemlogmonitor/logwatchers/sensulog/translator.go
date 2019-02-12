@@ -97,9 +97,9 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	checks_list := strings.Split(t.sensuchecks, ",")
 	// Loop through all checks and compare
 	for i := range checks_list {
-		if sensulog.Payload.Check.Name == c {
+		if sensulog.Payload.Check.Name == checks_list[i]{
 			//need to apped all matched checks
-			message :=  "[" + checks_list[i] + ">>" + sensulog.Paylod.Check.Output + "]"
+			message :=  "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
 		}
 	}
 	
@@ -110,7 +110,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 }
 
 func validatePluginConfig(cfg map[string]string) error {
-	if cfg[timestampKey] == "" {
+	if cfg[timestampFormatKey] == "" {
 		return fmt.Errorf("unexpected empty timestamp regular expression")
 	}
 	if cfg[checks] == "" {
