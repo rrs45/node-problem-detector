@@ -4,7 +4,7 @@
 		"checks": "check_docker_device_mapper",
 		"timestampFormat": "2006-01-02T15:04:05.000000-0700"
 	},
-	},
+	
 	"logPath": "/var/log/sensu/sensu.log",
 	"lookback": "5m",
 	"bufferSize": 10,
