@@ -17,9 +17,9 @@ import (
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers/sensulog"
 )
 
-const filelogPluginName = "sensulog"
+const sensulogPluginName = "sensulog"
 
 func init() {
 	// Register the filelog plugin.
-	registerLogWatcher(filelogPluginName, filelog.NewSyslogWatcherOrDie)
+	registerLogWatcher(sensulogPluginName, sensulog.NewSyslogWatcherOrDie)
 }
