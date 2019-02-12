@@ -14,7 +14,7 @@ package sensulog
 
 import (
 	"fmt"
-	"regexp"
+	
 	"time"
 	"encoding/json"
 	"strings"
@@ -59,13 +59,18 @@ type translator struct {
 	timestampFormat string
 }
 
+const (
+	checks = "checks"
+	timestampFormatKey = "timestampFormat"
+)
+
 func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	if err := validatePluginConfig(pluginConfig); err != nil {
 		glog.Errorf("Failed to validate plugin configuration %+v: %v", pluginConfig, err)
 	}
 	
 	return &translator{
-		sensuchecks: pluginConfig[checks],
+		sensuchecks: pluginConfig[sensuchecks],
 		timestampFormat: pluginConfig[timestampFormatKey],
 	}
 }
