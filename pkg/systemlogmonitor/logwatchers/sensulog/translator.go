@@ -100,7 +100,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	for i := range checks_list {
 		if sensulog.Payload.Check.Name == checks_list[i]{
 			//need to apped all matched checks
-			message :=  "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
+			message = "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
 		}
 	}
 	
