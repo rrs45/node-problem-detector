@@ -94,11 +94,12 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", sensulog.Timestamp, err)
 	}
 	
+	checks_list := strings.Split(t.sensuchecks, ",")
 	// Loop through all checks and compare
-	for c := range strings.Split(t.sensuchecks, ",") {
-		if sensulog.Paylod.Check.Name == c {
+	for i := range checks_list {
+		if sensulog.Payload.Check.Name == c {
 			//need to apped all matched checks
-			message :=  "[" + c + ">>" + sensulog.Paylod.Check.Output + "]"
+			message :=  "[" + checks_list[i] + ">>" + sensulog.Paylod.Check.Output + "]"
 		}
 	}
 	
