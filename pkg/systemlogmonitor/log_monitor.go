@@ -178,7 +178,16 @@ func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Ru
 	timestamp := logs[0].Timestamp
 	message := generateMessage(logs)
 	var events []types.Event
-	
+	if rule.Type == types.Temp {
+		// For temporary error only generate event
+		events = append(events, types.Event{
+			Severity:  types.Warn,
+			Timestamp: timestamp,
+			Reason:    rule.Reason,
+			Message:   message,
+		})
+	} else {
+		// For permanent error changes the condition
 		for i := range l.conditions {
 			condition := &l.conditions[i]
 			if condition.Type == rule.Condition {
