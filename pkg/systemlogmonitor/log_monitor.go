@@ -108,8 +108,25 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 	// to match each rule. If any rule is matched, log monitor will report a status.
 	
 	l.buffer.Push(log)
+	if l.config.WatcherConfig.Plugin == "sensulog" {
+		// config will have CRIT|WARN, if matched then update message with that log
+		matched := l.buffer.Match("CRIT|WARN")
+		
+		if len(matched) > 0 {
+			trigger := true
+			status := l.generateSensuStatus(matched, trigger)
+		} else {
+			trigger := false
+			status := l.generateSensuStatus(matched, trigger)
+		}
+		glog.Infof("New status generated: %+v", status)
+		l.output <- status
+		
+	} else {
 	for _, rule := range l.config.Rules {
 		//EDIT: need to match json field for level
+		// if sensu then match for CRIT or WARN
+				
 		matched := l.buffer.Match(rule.Pattern)
 		if len(matched) == 0 {
 			continue
@@ -118,7 +135,42 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 		glog.Infof("New status generated: %+v", status)
 		l.output <- status
 	}
+	}
 }
+
+
+// generateSensuStatus generates status from the logs.
+func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.Status {
+	// We use the timestamp of the first log line as the timestamp of the status.
+	timestamp := logs[0].Timestamp
+	message := generateMessage(logs)
+	var events []types.Event
+	// For permanent error changes the condition
+	for i := range l.conditions {
+		condition := &l.conditions[i]
+		
+		// Update transition timestamp and message when the condition
+		// changes. Condition is considered to be changed only when
+		// status or reason changes.
+	
+		if condition.Status == types.False || t {
+			condition.Transition = timestamp
+			condition.Message = "All checks passed"
+			
+		} else {
+			condition.Message = message
+			condition.Status = types.True
+			condition.Reason = rule.Reason
+			}
+	}
+	return &types.Status{
+		Source: l.config.Source,
+		// TODO(random-liu): Aggregate events and conditions and then do periodically report.
+		Events:     events,
+		Conditions: l.conditions,
+	}
+}
+
 
 // generateStatus generates status from the logs.
 func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Rule) *types.Status {
@@ -126,16 +178,7 @@ func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Ru
 	timestamp := logs[0].Timestamp
 	message := generateMessage(logs)
 	var events []types.Event
-	if rule.Type == types.Temp {
-		// For temporary error only generate event
-		events = append(events, types.Event{
-			Severity:  types.Warn,
-			Timestamp: timestamp,
-			Reason:    rule.Reason,
-			Message:   message,
-		})
-	} else {
-		// For permanent error changes the condition
+	
 		for i := range l.conditions {
 			condition := &l.conditions[i]
 			if condition.Type == rule.Condition {
