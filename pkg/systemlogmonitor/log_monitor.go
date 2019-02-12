@@ -163,7 +163,7 @@ func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.St
 		} else {
 			condition.Message = message
 			condition.Status = types.True
-			condition.Reason = rule.Reason
+			condition.Reason = "SomeChecksFailed"
 			}
 	}
 	return &types.Status{
