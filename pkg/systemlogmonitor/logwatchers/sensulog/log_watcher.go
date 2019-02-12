@@ -70,7 +70,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 var _ types.WatcherCreateFunc = NewSyslogWatcherOrDie
 
 // Watch starts the filelog watcher.
-func (s *filelogWatcher) Watch() (<-chan *logtypes.Log, error) {
+func (s *sensulogWatcher) Watch() (<-chan *logtypes.Log, error) {
 	r, err := getLogReader(s.cfg.LogPath)
 	if err != nil {
 		return nil, err
