@@ -32,7 +32,7 @@ import (
 	"k8s.io/node-problem-detector/pkg/util/tomb"
 )
 
-type filelogWatcher struct {
+type sensulogWatcher struct {
 	cfg        types.WatcherConfig
 	reader     *bufio.Reader
 	closer     io.Closer
@@ -55,7 +55,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 		glog.Fatalf("failed to get start time: %v", err)
 	}
 
-	return &filelogWatcher{
+	return &sensulogWatcher{
 		cfg:        cfg,
 		translator: newTranslatorOrDie(cfg.PluginConfig),
 		startTime:  startTime,
@@ -83,7 +83,7 @@ func (s *filelogWatcher) Watch() (<-chan *logtypes.Log, error) {
 }
 
 // Stop stops the filelog watcher.
-func (s *filelogWatcher) Stop() {
+func (s *sensulogWatcher) Stop() {
 	s.tomb.Stop()
 }
 
@@ -92,7 +92,7 @@ func (s *filelogWatcher) Stop() {
 const watchPollInterval = 500 * time.Millisecond
 
 // watchLoop is the main watch loop of filelog watcher.
-func (s *filelogWatcher) watchLoop() {
+func (s *sensulogWatcher) watchLoop() {
 	defer func() {
 		s.closer.Close()
 		close(s.logCh)
