@@ -76,6 +76,8 @@ func main() {
 			glog.Warningf("Duplicated monitor configuration %q", config)
 			continue
 		}
+		//raj
+		glog.info("SystemLogMonitorConfigPaths: %s", config) 
 		monitors[config] = systemlogmonitor.NewLogMonitorOrDie(config)
 	}
 
@@ -85,6 +87,8 @@ func main() {
 			glog.Warningf("Duplicated monitor configuration %q", config)
 			continue
 		}
+		//raj
+		glog.info("SystemLogMonitorConfigPaths: %s", config) 
 		monitors[config] = custompluginmonitor.NewCustomPluginMonitorOrDie(config)
 	}
 	c := problemclient.NewClientOrDie(npdo)
