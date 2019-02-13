@@ -77,7 +77,7 @@ func main() {
 			continue
 		}
 		//raj
-		glog.info("SystemLogMonitorConfigPaths: %s", config) 
+		glog.Infof("SystemLogMonitorConfigPaths: %+v", config) 
 		monitors[config] = systemlogmonitor.NewLogMonitorOrDie(config)
 	}
 
@@ -88,7 +88,7 @@ func main() {
 			continue
 		}
 		//raj
-		glog.info("SystemLogMonitorConfigPaths: %s", config) 
+		glog.Infof("SystemLogMonitorConfigPaths: %+v", config) 
 		monitors[config] = custompluginmonitor.NewCustomPluginMonitorOrDie(config)
 	}
 	c := problemclient.NewClientOrDie(npdo)
