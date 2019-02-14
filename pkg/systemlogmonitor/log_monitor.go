@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"time"
-
+	"fmt"
 	"github.com/golang/glog"
 
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers"
