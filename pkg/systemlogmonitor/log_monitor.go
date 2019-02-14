@@ -147,7 +147,7 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 // generateSensuStatus generates status from the logs.
 func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
-	timestamp := logs[0].Timestamp
+	
 	message := generateMessage(logs)
 	var events []types.Event
 	// For permanent error changes the condition
@@ -159,11 +159,13 @@ func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.St
 		// status or reason changes.
 	
 		if condition.Status == types.False || t {
-			
+			timestamp := time.NOW()
 			condition.Transition = timestamp
 			condition.Message = "All checks passed"
 			
 		} else {
+			timestamp := logs[0].Timestamp
+			condition.Transition = timestamp
 			condition.Message = message
 			condition.Status = types.True
 			condition.Reason = "SomeChecksFailed"
