@@ -7,7 +7,7 @@
 	
 	"logPath": "/var/log/sensu/sensu.log",
 	"lookback": "5m",
-	"bufferSize": 10,
+	"bufferSize": 100,
 	"source": "sensu-monitor",
 	"conditions": [
     		{
