@@ -160,7 +160,7 @@ func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.St
 	
 		if condition.Status == types.False || t {
 			
-			condition.Transition = time.NOW()
+			condition.Transition = time.Now()
 			condition.Message = "All checks passed"
 			
 		} else {
