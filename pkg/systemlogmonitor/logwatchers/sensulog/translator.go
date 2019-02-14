@@ -55,12 +55,12 @@ type SensuJsonLog struct {
 }
 
 type translator struct {
-	sensuchecks string
+	//sensuchecks string
 	timestampFormat string
 }
 
 const (
-	checks = "checks"
+	//checks = "checks"
 	timestampFormatKey = "timestampFormat"
 )
 
@@ -70,7 +70,7 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 	}
 	
 	return &translator{
-		sensuchecks: pluginConfig[checks],
+		//sensuchecks: pluginConfig[checks],
 		timestampFormat: pluginConfig[timestampFormatKey],
 	}
 }
@@ -95,15 +95,16 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 		return nil, fmt.Errorf("failed to parse timestamp %q: %v", sensulog.Timestamp, err)
 	}
 	
-	checks_list := strings.Split(t.sensuchecks, ",")
+	//checks_list := strings.Split(t.sensuchecks, ",")
 	var message string
 	// Loop through all checks and compare
-	for i := range checks_list {
+	/*for i := range checks_list {
 		if sensulog.Payload.Check.Name == checks_list[i]{
 			//need to apped all matched checks
 			message = "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
 		}
-	}
+	} */
+	message = "[" + sensulog.Payload.Check.Name + ">>" + sensulog.Payload.Check.Output + "]"
 	glog.Infof("Message is: %+v",message)
 	return &logtypes.Log{
 		Timestamp: timestamp,
@@ -115,9 +116,9 @@ func validatePluginConfig(cfg map[string]string) error {
 	if cfg[timestampFormatKey] == "" {
 		return fmt.Errorf("unexpected empty timestamp regular expression")
 	}
-	if cfg[checks] == "" {
+	/*if cfg[checks] == "" {
 		return fmt.Errorf("unexpected empty checks")
-	}
+	} */
 	
 	return nil
 }
