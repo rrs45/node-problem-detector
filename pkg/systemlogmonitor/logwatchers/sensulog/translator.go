@@ -83,6 +83,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	byt := []byte(line)
 	err := json.Unmarshal(byt, &sensulog)
 	if err != nil {
+		glog.Infof("Unable to unmarshall line %q", line)
 		return nil, fmt.Errorf("failed to unmarshal line ")
 	} else {
 		glog.Infof("Successfully unmarshaled line %q", line)
@@ -103,7 +104,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 			message = "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
 		}
 	}
-	
+	glog.Infof("Message is: %+v",message)
 	return &logtypes.Log{
 		Timestamp: timestamp,
 		Message:   message,
