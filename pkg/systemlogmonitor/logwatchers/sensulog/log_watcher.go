@@ -69,7 +69,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 // Make sure NewSyslogWathcer is types.WatcherCreateFunc.
 var _ types.WatcherCreateFunc = NewSyslogWatcherOrDie
 
-// Watch starts the filelog watcher.
+// Watch starts the sensu log watcher.
 func (s *sensulogWatcher) Watch() (<-chan *logtypes.Log, error) {
 	r, err := getLogReader(s.cfg.LogPath)
 	if err != nil {
@@ -77,7 +77,7 @@ func (s *sensulogWatcher) Watch() (<-chan *logtypes.Log, error) {
 	}
 	s.reader = bufio.NewReader(r)
 	s.closer = r
-	glog.Info("Start watching filelog")
+	glog.Info("Start watching Sensu log")
 	go s.watchLoop()
 	return s.logCh, nil
 }
@@ -125,10 +125,11 @@ func (s *sensulogWatcher) watchLoop() {
 			continue
 		}
 		// Discard messages before start time.
-		if log.Timestamp.Before(s.startTime) {
+		/* if log.Timestamp.Before(s.startTime) {
 			glog.V(5).Infof("Throwing away msg %q before start time: %v < %v", log.Message, log.Timestamp, s.startTime)
 			continue
-		}
+		}*/
+		//maintain last status of all checks seen
 		s.logCh <- log
 	}
 }
