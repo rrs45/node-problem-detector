@@ -106,7 +106,7 @@ func (l *logMonitor) monitorLoop() {
 func (l *logMonitor) parseLog(log *logtypes.Log) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
-	
+	glog.Infof("log monitor got new log: %+v", log)
 	l.buffer.Push(log)
 	if l.config.WatcherConfig.Plugin == "sensulog" {
 		// config will have CRIT|WARN, if matched then update message with that log
