@@ -17,7 +17,7 @@ import (
 	
 	"time"
 	"encoding/json"
-	"strings"
+	//"strings"
 
 	logtypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/types"
 
