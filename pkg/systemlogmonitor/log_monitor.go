@@ -22,6 +22,7 @@ import (
 	"time"
 	"fmt"
 	"github.com/golang/glog"
+	"regexp"
 
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers"
 	watchertypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers/types"
@@ -41,6 +42,16 @@ type logMonitor struct {
 	output     chan *types.Status
 	tomb       *tomb.Tomb
 }
+
+type condition_msg struct {
+	check string
+	level string
+	out   string
+}
+
+check_map := make(map[string]string)
+
+
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
 func NewLogMonitorOrDie(configPath string) types.Monitor {
@@ -107,6 +118,20 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
 	//fmt.Println("log monitor got new log: %+v", log)
+	// buffer: add check if new, check with old state , return changed
+	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
+	// remove check from cond . if len(check)> 0 generate status, else "all passed"
+	crit_matched, _ := regexp.MustString("CRITICAL", log.Output )
+	warn_matched, _ := regexp.MustString("WARN", log.Output )
+	ok_matched, _   := regexp.MustString("OK", log.Output ) 
+	value, ok := check_map[log.Check]
+	if ok {
+	} else {
+		check_map[log.Check] = log.Output
+		if crit_matched { 
+			// append cond message json: {check:xxx,level:xxx out:xxx
+			l.generateSensuStatus(
+	
 	l.buffer.Push(log)
 	if l.config.WatcherConfig.Plugin == "sensulog" {
 		// config will have CRIT|WARN, if matched then update message with that log
