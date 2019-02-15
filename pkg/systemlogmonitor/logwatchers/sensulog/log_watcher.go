@@ -125,10 +125,10 @@ func (s *sensulogWatcher) watchLoop() {
 			continue
 		}
 		// Discard messages before start time.
-		/* if log.Timestamp.Before(s.startTime) {
+		 if log.Timestamp.Before(s.startTime) {
 			glog.V(5).Infof("Throwing away msg %q before start time: %v < %v", log.Message, log.Timestamp, s.startTime)
 			continue
-		}*/
+		}
 		//maintain last status of all checks seen
 		s.logCh <- log
 	}
