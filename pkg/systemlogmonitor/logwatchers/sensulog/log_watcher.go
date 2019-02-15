@@ -37,7 +37,7 @@ type sensulogWatcher struct {
 	reader     *bufio.Reader
 	closer     io.Closer
 	translator *translator
-	sensulogCh      chan *logtypes.SensuLog
+	logCh      chan *logtypes.SensuLog
 	startTime  time.Time
 	tomb       *tomb.Tomb
 	clock      utilclock.Clock
@@ -61,7 +61,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 		startTime:  startTime,
 		tomb:       tomb.NewTomb(),
 		// A capacity 1000 buffer should be enough
-		logCh: make(chan *logtypes.Log, 1000),
+		logCh: make(chan *logtypes.SensuLog, 1000),
 		clock: utilclock.NewClock(),
 	}
 }
