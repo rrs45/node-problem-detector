@@ -28,6 +28,12 @@ type Log struct {
 	Message   string
 }
 
+type SensuLog struct {
+	Timestamp time.Time
+	Check	  string
+	Output 	  string
+}
+
 // Rule describes how log monitor should analyze the log.
 type Rule struct {
 	// Type is the type of matched problem.
