@@ -37,7 +37,7 @@ type sensulogWatcher struct {
 	reader     *bufio.Reader
 	closer     io.Closer
 	translator *translator
-	logCh      chan *logtypes.Log
+	sensulogCh      chan *logtypes.SensuLog
 	startTime  time.Time
 	tomb       *tomb.Tomb
 	clock      utilclock.Clock
