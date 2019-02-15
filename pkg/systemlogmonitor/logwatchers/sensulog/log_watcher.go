@@ -89,7 +89,7 @@ func (s *sensulogWatcher) Stop() {
 
 // watchPollInterval is the interval filelog log watcher will
 // poll for pod change after reading to the end.
-const watchPollInterval = 500 * time.Millisecond
+const watchPollInterval = 5000 * time.Millisecond
 
 // watchLoop is the main watch loop of filelog watcher.
 func (s *sensulogWatcher) watchLoop() {
