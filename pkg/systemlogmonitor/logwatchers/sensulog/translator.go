@@ -77,7 +77,7 @@ func newTranslatorOrDie(pluginConfig map[string]string) *translator {
 
 // translate translates the log line into internal type.
 
-func (t *translator) translate(line string) (*logtypes.Log, error) {
+func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
 	// Unmarshal Json line
 	var sensulog SensuJsonLog
 	byt := []byte(line)
@@ -96,7 +96,7 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 	}
 	
 	//checks_list := strings.Split(t.sensuchecks, ",")
-	var message string
+	//var message string
 	// Loop through all checks and compare
 	/*for i := range checks_list {
 		if sensulog.Payload.Check.Name == checks_list[i]{
@@ -105,12 +105,13 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 		}
 	} */
 	if sensulog.Payload.Check.Name != "" {
-		message = "[" + sensulog.Payload.Check.Name + ">>" + sensulog.Payload.Check.Output + "]"
+		return nil, fmt.Errorf("failed to parse timestamp %q: %v", sensulog.Timestamp, err)
 	}
-	fmt.Println("Message is: %+v",message)
-	return &logtypes.Log{
+	
+	return &logtypes.SensuLog{
 		Timestamp: timestamp,
-		Message:   message,
+		Check:     sensulog.Payload.Check.Name,
+		Output:    sensulog.Payload.Check.Output
 	}, nil
 }
 
