@@ -104,7 +104,9 @@ func (t *translator) translate(line string) (*logtypes.Log, error) {
 			message = "[" + checks_list[i] + ">>" + sensulog.Payload.Check.Output + "]"
 		}
 	} */
-	message = "[" + sensulog.Payload.Check.Name + ">>" + sensulog.Payload.Check.Output + "]"
+	if sensulog.Payload.Check.Name {
+		message = "[" + sensulog.Payload.Check.Name + ">>" + sensulog.Payload.Check.Output + "]"
+	}
 	glog.Infof("Message is: %+v",message)
 	return &logtypes.Log{
 		Timestamp: timestamp,
