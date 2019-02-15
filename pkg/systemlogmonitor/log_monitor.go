@@ -37,7 +37,7 @@ type logMonitor struct {
 	buffer     LogBuffer
 	config     MonitorConfig
 	conditions []types.Condition
-	logCh      <-chan *logtypes.Log
+	logCh      <-chan *logtypes.SensuLog
 	output     chan *types.Status
 	tomb       *tomb.Tomb
 }
@@ -103,7 +103,7 @@ func (l *logMonitor) monitorLoop() {
 
 // parseLog parses one log line.
 //EDIT: here we need to match config file for sensu
-func (l *logMonitor) parseLog(log *logtypes.Log) {
+func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
 	//fmt.Println("log monitor got new log: %+v", log)
