@@ -111,7 +111,7 @@ func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
 	return &logtypes.SensuLog{
 		Timestamp: timestamp,
 		Check:     sensulog.Payload.Check.Name,
-		Output:    sensulog.Payload.Check.Output
+		Output:    sensulog.Payload.Check.Output,
 	}, nil
 }
 
