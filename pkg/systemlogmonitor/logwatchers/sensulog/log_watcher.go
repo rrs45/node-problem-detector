@@ -67,7 +67,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.SensuLogWatcher {
 }
 
 // Make sure NewSyslogWathcer is types.WatcherCreateFunc.
-var _ types.WatcherCreateFunc = NewSyslogWatcherOrDie
+var _ types.SensuWatcherCreateFunc = NewSyslogWatcherOrDie
 
 // Watch starts the sensu log watcher.
 func (s *sensulogWatcher) Watch() (<-chan *logtypes.SensuLog, error) {
