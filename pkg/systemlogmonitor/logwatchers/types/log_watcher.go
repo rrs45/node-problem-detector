@@ -28,6 +28,14 @@ type LogWatcher interface {
 	Stop()
 }
 
+// SensuLogWatcher is the interface of a log watcher.
+type SensuLogWatcher interface {
+	// Watch starts watching logs and returns logs via a channel.
+	Watch() (<-chan *types.SensuLog, error)
+	// Stop stops the log watcher. Resources open should be closed properly.
+	Stop()
+}
+
 // WatcherConfig is the configuration of the log watcher.
 type WatcherConfig struct {
 	// Plugin is the name of plugin which is currently used.
