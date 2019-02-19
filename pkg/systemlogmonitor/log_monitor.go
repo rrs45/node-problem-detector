@@ -43,14 +43,11 @@ type logMonitor struct {
 	tomb       *tomb.Tomb
 }
 
-type condition_msg struct {
-	check string
-	level string
-	out   string
+
+type check_map struct {
+	check     map[string]string
+	timestamp string
 }
-
-check_map := make(map[string]string)
-
 
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
@@ -121,9 +118,9 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// buffer: add check if new, check with old state , return changed
 	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
 	// remove check from cond . if len(check)> 0 generate status, else "all passed"
-	crit_matched, _ := regexp.MustString("CRITICAL", log.Output )
-	warn_matched, _ := regexp.MustString("WARN", log.Output )
-	ok_matched, _   := regexp.MustString("OK", log.Output ) 
+	crit_matched, _ := regexp.String("CRITICAL", log.Output )
+	warn_matched, _ := regexp.String("WARN", log.Output )
+	ok_matched, _   := regexp.String("OK", log.Output ) 
 	value, ok := check_map[log.Check]
 	if ok {
 	} else {
