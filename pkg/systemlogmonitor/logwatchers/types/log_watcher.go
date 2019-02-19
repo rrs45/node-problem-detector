@@ -56,3 +56,5 @@ type WatcherConfig struct {
 
 // WatcherCreateFunc is the create function of a log watcher.
 type WatcherCreateFunc func(WatcherConfig) LogWatcher
+
+type SensuWatcherCreateFunc func(WatcherConfig) SensuLogWatcher
