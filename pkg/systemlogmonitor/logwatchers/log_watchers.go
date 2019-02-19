@@ -24,6 +24,7 @@ import (
 
 // createFuncs is a table of createFuncs for all supported log watchers.
 var createFuncs = map[string]types.WatcherCreateFunc{}
+var createSensuFuncs = map[string]types.SensuWatcherCreateFunc{}
 
 // registerLogWatcher registers a createFunc for a log watcher.
 func registerLogWatcher(name string, create types.WatcherCreateFunc) {
@@ -31,7 +32,7 @@ func registerLogWatcher(name string, create types.WatcherCreateFunc) {
 }
 
 func registerSensuLogWatcher(name string, create types.SensuWatcherCreateFunc) {
-	createFuncs[name] = create
+	createSensuFuncs[name] = create
 }
 
 // GetLogWatcherOrDie get a log watcher based on the passed in configuration.
