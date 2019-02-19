@@ -49,7 +49,7 @@ type check_store struct {
 	output string
 	level  string
 }
-//check_map :=  make(map[string]string)
+checks_status_arr :=  []check_store
 
 
 
@@ -121,55 +121,36 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// buffer: add check if new, check with old state , return changed
 	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
 	// remove check from cond . if len(check)> 0 generate status, else "all passed"
+	found := false
 	crit_matched, _ := regexp.String("CRITICAL", log.Output )
 	warn_matched, _ := regexp.String("WARN", log.Output )
 	ok_matched, _   := regexp.String("OK", log.Output ) 
-	value, ok := check_map[log.Check]
-	if ok {
-	} else {
-		//check_map stores check_name, output & level
-		//check_map{check: "", output:log.Output, level:
-		check_map[log.Check] = log.Output
-	}
-		
-		if crit_matched { 
-			// append cond message json: {check:xxx,level:xxx out:xxx
-			l.generateSensuStatus(log)
 	
-	l.buffer.Push(log)
-	if l.config.WatcherConfig.Plugin == "sensulog" {
-		// config will have CRIT|WARN, if matched then update message with that log
-		matched_crit := l.buffer.Match("CRIT|WARN")
-		matched_ok := l.buffer.Match("OK")
-		
-		if len(matched_crit) > 0 {
-			trigger := true
-			status := l.generateSensuStatus(matched_crit, trigger)
-			fmt.Println("New status generated: %+v", status)
-			l.output <- status
-		} else if len(matched_ok) > 0{
-			trigger := false
-			fmt.Println("LogMonitor: no Match found")
-			status := l.generateSensuStatus(matched_ok, trigger)
-			glog.Infof("New status generated: %+v", status)
-			l.output <- status
-		}
-	
-		
-	} else {
-	for _, rule := range l.config.Rules {
-		//EDIT: need to match json field for level
-		// if sensu then match for CRIT or WARN
+	for _, elem := range checks_status_arr {
+		//If previously present
+		if elem.check == log.Check {
+			if crit_matched { 
+				elem.level = 'CRITICAL'
+				found := true
+			} else if warn_matched{
+				elem.level = 'WARN'
+				found := true
+			} else {
+				//delete element if ok
 				
-		matched := l.buffer.Match(rule.Pattern)
-		if len(matched) == 0 {
-			continue
+			}
 		}
-		status := l.generateStatus(matched, rule)
-		glog.Infof("New status generated: %+v", status)
-		l.output <- status
 	}
+	if crit_matched {
+		checks_status_arr = append(checks_status_arr, {log.Check, log.Output, 'CRITICAL'})
+	} else if warn_matched {		   
+		checks_status_arr = append(checks_status_arr, {log.Check, log.Output, 'WARN'})
 	}
+				
+	
+	//l.buffer.Push(log)
+	status := l.generateStatus(matched, rule)
+	
 }
 
 
