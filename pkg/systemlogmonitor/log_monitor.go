@@ -158,10 +158,10 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 
 
 // generateSensuStatus generates status from the logs.
-func (l *logMonitor) generateSensuStatus(logs []*logtypes.SensuLog, level string) *types.Status {
+func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
 	
-	message := generateMessage(logs)
+	message := generateMessage(logs_arr)
 	var events []types.Event
 	// For permanent error changes the condition
 	for i := range l.conditions {
