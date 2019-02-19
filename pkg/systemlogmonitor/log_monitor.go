@@ -24,6 +24,7 @@ import (
 	"github.com/golang/glog"
 	"regexp"
 	"time"
+	"encoding/json"
 
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers"
 	watchertypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers/types"
@@ -161,8 +162,26 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
 	
-	message := generateMessage(logs_arr)
+	//message := generateMessage(logs_arr)
+	
+
 	var events []types.Event
+	if len(logs_arr) > 0 {
+		for _, elem := range logs_arr {
+			events = append(events, util.GenerateSensuConditionChangeEvent(
+						elem.check,
+						"SensuCheckFailed",
+						elem.timestamp
+			))
+		}
+	} else {
+		events = append(events, util.GenerateSensuConditionChangeEvent(
+						"None",
+						"SensuCheckFailed",
+						elem.timestamp
+		))
+	}
+	
 	// For permanent error changes the condition
 	for i := range l.conditions {
 		condition := &l.conditions[i]
@@ -171,21 +190,22 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 		// changes. Condition is considered to be changed only when
 		// status or reason changes.
 	
-		if condition.Status == types.False || t {
-			
+		if len(logs_arr) == 0 {
 			condition.Transition = time.Now()
-			condition.Message = "All checks passed"
-			
+						
 		} else {
-			timestamp := logs[0].Timestamp
-			condition.Transition = timestamp
-			condition.Message = message
+			out, err := json.Marshal(a)
+    			if err != nil {
+				panic ("log_monitor: cannot unmarshal struct",err)
+    				}
+			condition.Transition = time.Now()
+			condition.Message = 
 			condition.Status = types.True
 			condition.Reason = "SomeChecksFailed"
 			}
 	}
 	return &types.Status{
-		Source: l.config.Source,
+		Source: Sensu,
 		// TODO(random-liu): Aggregate events and conditions and then do periodically report.
 		Events:     events,
 		Conditions: l.conditions,
@@ -199,6 +219,7 @@ func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Ru
 	timestamp := logs[0].Timestamp
 	message := generateMessage(logs)
 	var events []types.Event
+
 	if rule.Type == types.Temp {
 		// For temporary error only generate event
 		events = append(events, types.Event{
