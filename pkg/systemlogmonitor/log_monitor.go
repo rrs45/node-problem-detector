@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	"regexp"
-	"encoding/json"
 
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers"
 	watchertypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers/types"
@@ -51,7 +50,7 @@ type check_store struct {
 	output string
 	level  string
 }
-checks_status_arr :=  []check_store{}
+var checks_status_arr =  []check_store{}
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
 func NewLogMonitorOrDie(configPath string) types.Monitor {
