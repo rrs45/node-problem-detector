@@ -81,7 +81,7 @@ func NewLogMonitorOrDie(configPath string) types.Monitor {
 		glog.Fatalf("Failed to validate matching rules %+v: %v", l.config.Rules, err)
 	}
 	glog.Infof("Finish parsing log monitor config file: %+v", l.config)
-	l.watcher = logwatchers.GetLogWatcherOrDie(l.config.WatcherConfig)
+	l.watcher = logwatchers.GetSensuLogWatcherOrDie(l.config.WatcherConfig)
 	l.buffer = NewLogBuffer(l.config.BufferSize)
 	// A 1000 size channel should be big enough.
 	l.output = make(chan *types.Status, 1000)
