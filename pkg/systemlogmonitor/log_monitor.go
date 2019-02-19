@@ -196,10 +196,10 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 		} else {
 			out, err := json.Marshal(a)
     			if err != nil {
-				panic ("log_monitor: cannot unmarshal struct",err)
+				panic (fmt.Sprintf("log_monitor: cannot unmarshal struct %v",err))
     				}
 			condition.Transition = time.Now()
-			condition.Message = 
+			condition.Message = string(out)
 			condition.Status = types.True
 			condition.Reason = "SomeChecksFailed"
 			}
