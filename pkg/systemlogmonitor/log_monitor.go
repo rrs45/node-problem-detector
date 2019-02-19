@@ -133,11 +133,11 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 		if elem.check == log.Check {
 			new_elem = false
 			if crit_matched { 
-				elem.level = 'CRITICAL'
+				elem.level = "CRITICAL"
 				elem.timestamp = log.Timestamp
 		
 			} else if warn_matched{
-				elem.level = 'WARN'
+				elem.level = "WARN"
 				elem.timestamp = log.Timestamp
 			} else if ok_matched{
 				//delete element if ok
@@ -148,10 +148,10 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 		}
 	}
 			
-	if crit_matched && new_elem{
-		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'CRITICAL'})
-	} else if warn_matched && new_elem{		   
-		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'WARN'})
+	if crit_matched && new_elem {
+		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, "CRITICAL"})
+	} else if warn_matched && new_elem {		   
+		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, 'WARN'})
 	}
 				
 	
