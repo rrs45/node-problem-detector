@@ -43,6 +43,15 @@ type logMonitor struct {
 	tomb       *tomb.Tomb
 }
 
+type SensulogMonitor struct {
+	watcher    watchertypes.SensuLogWatcher
+	buffer     LogBuffer
+	config     MonitorConfig
+	conditions []types.Condition
+	logCh      <-chan *logtypes.SensuLog
+	output     chan *types.Status
+	tomb       *tomb.Tomb
+}
 
 type check_store struct {
 	timestamp time.Time
@@ -54,7 +63,7 @@ var checks_status_arr =  []check_store{}
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
 func NewLogMonitorOrDie(configPath string) types.Monitor {
-	l := &logMonitor{
+	l := &SensulogMonitor{
 		tomb: tomb.NewTomb(),
 	}
 	f, err := ioutil.ReadFile(configPath)
