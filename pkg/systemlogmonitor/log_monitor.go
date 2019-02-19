@@ -44,10 +44,13 @@ type logMonitor struct {
 }
 
 
-type check_map struct {
-	check     map[string]string
-	timestamp string
+type check_store struct {
+	check string
+	output string
+	level  string
 }
+//check_map :=  make(map[string]string)
+
 
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
@@ -124,10 +127,14 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	value, ok := check_map[log.Check]
 	if ok {
 	} else {
+		//check_map stores check_name, output & level
+		//check_map{check: "", output:log.Output, level:
 		check_map[log.Check] = log.Output
+	}
+		
 		if crit_matched { 
 			// append cond message json: {check:xxx,level:xxx out:xxx
-			l.generateSensuStatus(
+			l.generateSensuStatus(log)
 	
 	l.buffer.Push(log)
 	if l.config.WatcherConfig.Plugin == "sensulog" {
@@ -167,7 +174,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 
 
 // generateSensuStatus generates status from the logs.
-func (l *logMonitor) generateSensuStatus(logs []*logtypes.Log, t bool) *types.Status {
+func (l *logMonitor) generateSensuStatus(logs []*logtypes.SensuLog, level string) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
 	
 	message := generateMessage(logs)
