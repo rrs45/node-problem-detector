@@ -151,7 +151,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	if crit_matched && new_elem {
 		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, "CRITICAL"})
 	} else if warn_matched && new_elem {		   
-		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, 'WARN'})
+		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, "WARN"})
 	}
 				
 	
@@ -177,14 +177,14 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 			events = append(events, util.GenerateSensuConditionChangeEvent(
 						elem.check,
 						"SensuCheckFailed",
-						elem.timestamp
+						elem.timestamp,
 			))
 		}
 	} else {
 		events = append(events, util.GenerateSensuConditionChangeEvent(
 						"None",
 						"SensuCheckFailed",
-						elem.timestamp
+						elem.timestamp,
 		))
 	}
 	
