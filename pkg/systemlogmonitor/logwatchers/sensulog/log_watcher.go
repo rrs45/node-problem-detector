@@ -45,7 +45,7 @@ type sensulogWatcher struct {
 
 // NewSyslogWatcherOrDie creates a new log watcher. The function panics
 // when encounters an error.
-func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.SensuLogWatcher {
+func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 	uptime, err := util.GetUptimeDuration()
 	if err != nil {
 		glog.Fatalf("failed to get uptime: %v", err)
