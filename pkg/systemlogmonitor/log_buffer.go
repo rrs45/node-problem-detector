@@ -64,7 +64,7 @@ func (b *logBuffer) Match(expr string) []*types.Log {
 	// The expression should be checked outside, and it must match to the end.
 	reg := regexp.MustCompile(expr + `\z`)
 	log := b.String()
-	fmt.Println("log_buffer: %+v", log)
+	//fmt.Println("log_buffer: %+v", log)
 	loc := reg.FindStringIndex(log)
 	if loc == nil {
 		// No match
