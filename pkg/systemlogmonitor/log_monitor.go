@@ -62,7 +62,7 @@ type check_store struct {
 var checks_status_arr =  []check_store{}
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
-func NewLogMonitorOrDie(configPath string) types.SensulogMonitor {
+func NewLogMonitorOrDie(configPath string) types.Monitor {
 	l := &SensulogMonitor{
 		tomb: tomb.NewTomb(),
 	}
