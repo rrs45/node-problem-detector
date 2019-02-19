@@ -70,7 +70,7 @@ func NewSyslogWatcherOrDie(cfg types.WatcherConfig) types.LogWatcher {
 var _ types.WatcherCreateFunc = NewSyslogWatcherOrDie
 
 // Watch starts the sensu log watcher.
-func (s *sensulogWatcher) Watch() (<-chan *logtypes.Log, error) {
+func (s *sensulogWatcher) Watch() (<-chan *logtypes.SensuLog, error) {
 	r, err := getLogReader(s.cfg.LogPath)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (s *sensulogWatcher) watchLoop() {
 		}
 		// Discard messages before start time.
 		 if log.Timestamp.Before(s.startTime) {
-			glog.V(5).Infof("Throwing away msg %q before start time: %v < %v", log.Message, log.Timestamp, s.startTime)
+			glog.V(5).Infof("Throwing away check %q before start time: %v < %v", log.Check, log.Timestamp, s.startTime)
 			continue
 		}
 		//maintain last status of all checks seen
