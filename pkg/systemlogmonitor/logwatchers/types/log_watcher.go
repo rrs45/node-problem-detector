@@ -23,7 +23,7 @@ import (
 // LogWatcher is the interface of a log watcher.
 type LogWatcher interface {
 	// Watch starts watching logs and returns logs via a channel.
-	Watch() (<-chan *types.Log, error)
+	Watch() (<-chan *types.SensuLog, error)
 	// Stop stops the log watcher. Resources open should be closed properly.
 	Stop()
 }
