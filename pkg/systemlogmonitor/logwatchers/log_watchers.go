@@ -48,7 +48,7 @@ func GetLogWatcherOrDie(config types.WatcherConfig) types.LogWatcher {
 
 
 func GetSensuLogWatcherOrDie(config types.WatcherConfig) types.SensuLogWatcher {
-	create, ok := createFuncs[config.Plugin]
+	create, ok := createSensuFuncs[config.Plugin]
 	if !ok {
 		glog.Fatalf("No create function found for plugin %q", config.Plugin)
 	}
