@@ -130,9 +130,9 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
 	// remove check from cond . if len(check)> 0 generate status, else "all passed"
 
-	crit_matched, _ := regexp.String("CRITICAL", log.Output )
-	warn_matched, _ := regexp.String("WARN", log.Output )
-	ok_matched, _   := regexp.String("OK", log.Output ) 
+	crit_matched, _ := regexp.MatchString("CRITICAL", log.Output )
+	warn_matched, _ := regexp.MatchString("WARN", log.Output )
+	ok_matched, _   := regexp.MatchString("OK", log.Output ) 
 	
 	b := checks_status_arr[:0]
 	update := false
