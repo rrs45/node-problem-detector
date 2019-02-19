@@ -129,9 +129,13 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	warn_matched, _ := regexp.String("WARN", log.Output )
 	ok_matched, _   := regexp.String("OK", log.Output ) 
 	
-	for _, elem := range checks_status_arr {
+	b := checks_status_arr[:0]
+	update := false
+	new_elem := true
+	for i, elem := range checks_status_arr {
 		//If previously present
 		if elem.check == log.Check {
+			new_elem = false
 			if crit_matched { 
 				elem.level = 'CRITICAL'
 				elem.timestamp = log.Timestamp
@@ -139,21 +143,27 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 			} else if warn_matched{
 				elem.level = 'WARN'
 				elem.timestamp = log.Timestamp
-			} else {
+			} else if ok_matched{
 				//delete element if ok
+				b = append(checks_status_arr[:i], checks_status_arr[i+1:])
+				update = true	
 				
 			}
 		}
 	}
-	if crit_matched {
+			
+	if crit_matched && new_elem{
 		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'CRITICAL'})
-	} else if warn_matched {		   
+	} else if warn_matched && new_elem{		   
 		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'WARN'})
 	}
 				
 	
-	//l.buffer.Push(log)
-	status := l.generateSensuStatus(checks_status_arr)
+	if update {
+		status := l.generateSensuStatus(b)
+	} else {
+		status := l.generateSensuStatus(checks_status_arr)
+	}
 	
 }
 
