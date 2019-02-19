@@ -33,6 +33,16 @@ func GenerateConditionChangeEvent(t string, status types.ConditionStatus, reason
 	}
 }
 
+// GenerateConditionChangeEvent generates an event for condition change.
+func GenerateSensuConditionChangeEvent(c string, reason string, timestamp time.Time) types.Event {
+	return types.Event{
+		Severity:  types.Info,
+		Timestamp: timestamp,
+		Reason:    reason,
+		Message:   fmt.Sprintf("Sensu check:  %s is failed", c),
+	}
+}
+
 func GetUptimeDuration() (time.Duration, error) {
 	var info syscall.Sysinfo_t
 	if err := syscall.Sysinfo(&info); err != nil {
