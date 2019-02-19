@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	"regexp"
+	"time"
 
 	"k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers"
 	watchertypes "k8s.io/node-problem-detector/pkg/systemlogmonitor/logwatchers/types"
@@ -45,6 +46,7 @@ type logMonitor struct {
 
 
 type check_store struct {
+	timestamp time.Time
 	check string
 	output string
 	level  string
@@ -121,7 +123,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	// buffer: add check if new, check with old state , return changed
 	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
 	// remove check from cond . if len(check)> 0 generate status, else "all passed"
-	found := false
+
 	crit_matched, _ := regexp.String("CRITICAL", log.Output )
 	warn_matched, _ := regexp.String("WARN", log.Output )
 	ok_matched, _   := regexp.String("OK", log.Output ) 
@@ -131,10 +133,11 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 		if elem.check == log.Check {
 			if crit_matched { 
 				elem.level = 'CRITICAL'
-				found := true
+				elem.timestamp = log.Timestamp
+		
 			} else if warn_matched{
 				elem.level = 'WARN'
-				found := true
+				elem.timestamp = log.Timestamp
 			} else {
 				//delete element if ok
 				
@@ -142,14 +145,14 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 		}
 	}
 	if crit_matched {
-		checks_status_arr = append(checks_status_arr, {log.Check, log.Output, 'CRITICAL'})
+		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'CRITICAL'})
 	} else if warn_matched {		   
-		checks_status_arr = append(checks_status_arr, {log.Check, log.Output, 'WARN'})
+		checks_status_arr = append(checks_status_arr, {log.Timestamp, log.Check, log.Output, 'WARN'})
 	}
 				
 	
 	//l.buffer.Push(log)
-	status := l.generateStatus(matched, rule)
+	status := l.generateSensuStatus(checks_status_arr)
 	
 }
 
