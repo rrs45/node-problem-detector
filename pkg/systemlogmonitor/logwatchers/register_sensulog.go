@@ -21,5 +21,5 @@ const sensulogPluginName = "sensulog"
 
 func init() {
 	// Register the filelog plugin.
-	registerLogWatcher(sensulogPluginName, sensulog.NewSyslogWatcherOrDie)
+	registerSensuLogWatcher(sensulogPluginName, sensulog.NewSyslogWatcherOrDie)
 }
