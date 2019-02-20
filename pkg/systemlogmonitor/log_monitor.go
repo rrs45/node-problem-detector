@@ -230,7 +230,7 @@ func (s *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 	} else {
 		status := s.generateSensuStatus(checks_status_arr)
 	}
-	
+	s.output <- status
 }
 
 
