@@ -104,6 +104,25 @@ func (l *logMonitor) Stop() {
 	l.tomb.Stop()
 }
 
+
+func (l *SensulogMonitor) Start() (<-chan *types.Status, error) {
+	glog.Info("Start log monitor")
+	var err error
+	l.logCh, err = l.watcher.Watch()
+	if err != nil {
+		return nil, err
+	}
+	go l.monitorLoop()
+	return l.output, nil
+}
+
+func (l *SensulogMonitor) Stop() {
+	glog.Info("Stop log monitor")
+	l.tomb.Stop()
+}
+
+
+
 // monitorLoop is the main loop of log monitor.
 func (l *logMonitor) monitorLoop() {
 	defer l.tomb.Done()
