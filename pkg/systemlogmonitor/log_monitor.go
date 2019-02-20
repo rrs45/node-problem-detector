@@ -63,14 +63,14 @@ var checks_status_arr =  []check_store{}
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
 func NewSensuLogMonitorOrDie(configPath string) types.Monitor {
-	l := &SensulogMonitor{
+	s := &SensulogMonitor{
 		tomb: tomb.NewTomb(),
 	}
 	f, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		glog.Fatalf("Failed to read configuration file %q: %v", configPath, err)
 	}
-	err = json.Unmarshal(f, &l.config)
+	err = json.Unmarshal(f, &s.config)
 	if err != nil {
 		glog.Fatalf("Failed to unmarshal configuration file %q: %v", configPath, err)
 	}
@@ -79,14 +79,14 @@ func NewSensuLogMonitorOrDie(configPath string) types.Monitor {
 	(&l.config).ApplyDefaultConfiguration()
 	err = l.config.ValidateRules()
 	if err != nil {
-		glog.Fatalf("Failed to validate matching rules %+v: %v", l.config.Rules, err)
+		glog.Fatalf("Failed to validate matching rules %+v: %v", s.config.Rules, err)
 	}
-	glog.Infof("Finish parsing log monitor config file: %+v", l.config)
-	l.watcher = logwatchers.GetSensuLogWatcherOrDie(l.config.WatcherConfig)
-	l.buffer = NewLogBuffer(l.config.BufferSize)
+	glog.Infof("Finish parsing log monitor config file: %+v", s.config)
+	s.watcher = logwatchers.GetSensuLogWatcherOrDie(s.config.WatcherConfig)
+	s.buffer = NewLogBuffer(s.config.BufferSize)
 	// A 1000 size channel should be big enough.
-	l.output = make(chan *types.Status, 1000)
-	return l
+	s.output = make(chan *types.Status, 1000)
+	return s
 }
 
 func NewLogMonitorOrDie(configPath string) types.Monitor {
@@ -132,32 +132,32 @@ func (l *logMonitor) Stop() {
 	l.tomb.Stop()
 }
 
-func (l *SensulogMonitor) Stop() {
+func (s *SensulogMonitor) Stop() {
 	glog.Info("Stop log monitor")
-	l.tomb.Stop()
+	s.tomb.Stop()
 }
 
-func (l *SensulogMonitor) Start() (<-chan *types.Status, error) {
+func (s *SensulogMonitor) Start() (<-chan *types.Status, error) {
 	glog.Info("Start log monitor")
 	var err error
-	l.logCh, err = l.watcher.Watch()
+	s.logCh, err = s.watcher.Watch()
 	if err != nil {
 		return nil, err
 	}
-	go l.monitorLoop()
+	go s.monitorLoop()
 	return l.output, nil
 }
 
 // monitorLoop is the main loop of log monitor.
-func (l *SensulogMonitor) monitorLoop() {
-	defer l.tomb.Done()
-	l.initializeStatus()
+func (s *SensulogMonitor) monitorLoop() {
+	defer s.tomb.Done()
+	s.initializeStatus()
 	for {
 		select {
-		case log := <-l.logCh:
-			l.parseLog(log)
-		case <-l.tomb.Stopping():
-			l.watcher.Stop()
+		case log := <-s.logCh:
+			s.parseLog(log)
+		case <-s.tomb.Stopping():
+			s.watcher.Stop()
 			glog.Infof("Log monitor stopped")
 			return
 		}
@@ -182,7 +182,7 @@ func (l *logMonitor) monitorLoop() {
 
 // parseLog parses one log line.
 //EDIT: here we need to match config file for sensu
-func (l *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
+func (s *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
 	//fmt.Println("log monitor got new log: %+v", log)
@@ -252,7 +252,7 @@ func (l *logMonitor) parseLog(log *logtypes.Log) {
 
 
 // generateSensuStatus generates status from the logs.
-func (l *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
+func (s *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
 	
 	//message := generateMessage(logs_arr)
@@ -276,8 +276,8 @@ func (l *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Sta
 	}
 	
 	// For permanent error changes the condition
-	for i := range l.conditions {
-		condition := &l.conditions[i]
+	for i := range s.conditions {
+		condition := &s.conditions[i]
 		
 		// Update transition timestamp and message when the condition
 		// changes. Condition is considered to be changed only when
@@ -301,7 +301,7 @@ func (l *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Sta
 		Source: "Sensu",
 		// TODO(random-liu): Aggregate events and conditions and then do periodically report.
 		Events:     events,
-		Conditions: l.conditions,
+		Conditions: s.conditions,
 	}
 }
 
@@ -354,14 +354,14 @@ func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Ru
 }
 
 // initializeStatus initializes the internal condition and also reports it to the node problem detector.
-func (l *SensulogMonitor) initializeStatus() {
+func (s *SensulogMonitor) initializeStatus() {
 	// Initialize the default node conditions
-	l.conditions = initialConditions(l.config.DefaultConditions)
-	glog.Infof("Initialize condition generated: %+v", l.conditions)
+	s.conditions = initialConditions(s.config.DefaultConditions)
+	glog.Infof("Initialize condition generated: %+v", s.conditions)
 	// Update the initial status
-	l.output <- &types.Status{
-		Source:     l.config.Source,
-		Conditions: l.conditions,
+	s.output <- &types.Status{
+		Source:     s.config.Source,
+		Conditions: s.conditions,
 	}
 }
 
