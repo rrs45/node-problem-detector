@@ -76,8 +76,8 @@ func NewSensuLogMonitorOrDie(configPath string) types.Monitor {
 	}
 		
 	// Apply default configurations
-	(&l.config).ApplyDefaultConfiguration()
-	err = l.config.ValidateRules()
+	(&s.config).ApplyDefaultConfiguration()
+	err = s.config.ValidateRules()
 	if err != nil {
 		glog.Fatalf("Failed to validate matching rules %+v: %v", s.config.Rules, err)
 	}
@@ -145,7 +145,7 @@ func (s *SensulogMonitor) Start() (<-chan *types.Status, error) {
 		return nil, err
 	}
 	go s.monitorLoop()
-	return l.output, nil
+	return s.output, nil
 }
 
 // monitorLoop is the main loop of log monitor.
@@ -226,9 +226,9 @@ func (s *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 				
 	
 	if update {
-		status := l.generateSensuStatus(b)
+		status := s.generateSensuStatus(b)
 	} else {
-		status := l.generateSensuStatus(checks_status_arr)
+		status := s.generateSensuStatus(checks_status_arr)
 	}
 	
 }
