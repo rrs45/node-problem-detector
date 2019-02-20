@@ -78,7 +78,7 @@ func main() {
 		}
 		//raj
 		glog.Infof("SystemLogMonitorConfigPaths: %+v", config) 
-		monitors[config] = systemlogmonitor.NewLogMonitorOrDie(config)
+		monitors[config] = systemlogmonitor.NewSensuLogMonitorOrDie(config)
 	}
 
 	for _, config := range npdo.CustomPluginMonitorConfigPaths {
