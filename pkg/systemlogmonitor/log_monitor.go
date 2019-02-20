@@ -227,10 +227,12 @@ func (s *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 	
 	if update {
 		status := s.generateSensuStatus(b)
+		s.output <- status
 	} else {
 		status := s.generateSensuStatus(checks_status_arr)
+		s.output <- status
 	}
-	s.output <- status
+	
 }
 
 
