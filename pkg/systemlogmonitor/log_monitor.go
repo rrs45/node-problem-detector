@@ -104,6 +104,10 @@ func (l *logMonitor) Stop() {
 	l.tomb.Stop()
 }
 
+func (l *SensulogMonitor) Stop() {
+	glog.Info("Stop log monitor")
+	l.tomb.Stop()
+}
 
 func (l *SensulogMonitor) Start() (<-chan *types.Status, error) {
 	glog.Info("Start log monitor")
@@ -212,7 +216,7 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 		events = append(events, util.GenerateSensuConditionChangeEvent(
 						"None",
 						"SensuCheckFailed",
-						elem.timestamp,
+						time.Now(),
 		))
 	}
 	
@@ -239,7 +243,7 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 			}
 	}
 	return &types.Status{
-		Source: Sensu,
+		Source: "Sensu",
 		// TODO(random-liu): Aggregate events and conditions and then do periodically report.
 		Events:     events,
 		Conditions: l.conditions,
