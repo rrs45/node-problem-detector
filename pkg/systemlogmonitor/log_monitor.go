@@ -38,7 +38,7 @@ type logMonitor struct {
 	buffer     LogBuffer
 	config     MonitorConfig
 	conditions []types.Condition
-	logCh      <-chan *logtypes.SensuLog
+	logCh      <-chan *logtypes.Log
 	output     chan *types.Status
 	tomb       *tomb.Tomb
 }
