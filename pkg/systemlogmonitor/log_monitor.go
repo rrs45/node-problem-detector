@@ -206,6 +206,59 @@ func (l *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 }
 
 
+func (l *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
+	// Once there is new log, log monitor will push it into the log buffer and try
+	// to match each rule. If any rule is matched, log monitor will report a status.
+	//fmt.Println("log monitor got new log: %+v", log)
+	// buffer: add check if new, check with old state , return changed
+	// check_map[check] = output, if old is ok & new is crit => condition is true, add check to cond, else old is crit & new is ok
+	// remove check from cond . if len(check)> 0 generate status, else "all passed"
+
+	crit_matched, _ := regexp.MatchString("CRITICAL", log.Output )
+	warn_matched, _ := regexp.MatchString("WARN", log.Output )
+	ok_matched, _   := regexp.MatchString("OK", log.Output ) 
+	
+	b := checks_status_arr[:0]
+
+	update := false
+	new_elem := true
+	for i, elem := range checks_status_arr {
+		//If previously present
+		if elem.check == log.Check {
+			new_elem = false
+			if crit_matched { 
+				elem.level = "CRITICAL"
+				elem.timestamp = log.Timestamp
+		
+			} else if warn_matched{
+				elem.level = "WARN"
+				elem.timestamp = log.Timestamp
+			} else if ok_matched{
+				//delete element if ok
+				b = append(checks_status_arr[:i], checks_status_arr[i+1:]...)
+				update = true	
+				
+			}
+		}
+	}
+			
+	if crit_matched && new_elem {
+		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, "CRITICAL"})
+	} else if warn_matched && new_elem {		   
+		checks_status_arr = append(checks_status_arr, check_store{log.Timestamp, log.Check, log.Output, "WARN"})
+	}
+				
+	
+	if update {
+		status := l.generateSensuStatus(b)
+	} else {
+		status := l.generateSensuStatus(checks_status_arr)
+	}
+	
+}
+
+
+
 // generateSensuStatus generates status from the logs.
 func (l *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
@@ -319,6 +372,18 @@ func (l *SensulogMonitor) initializeStatus() {
 		Conditions: l.conditions,
 	}
 }
+
+func (l *logMonitor) initializeStatus() {
+	// Initialize the default node conditions
+	l.conditions = initialConditions(l.config.DefaultConditions)
+	glog.Infof("Initialize condition generated: %+v", l.conditions)
+	// Update the initial status
+	l.output <- &types.Status{
+		Source:     l.config.Source,
+		Conditions: l.conditions,
+	}
+}
+
 
 func initialConditions(defaults []types.Condition) []types.Condition {
 	conditions := make([]types.Condition, len(defaults))
