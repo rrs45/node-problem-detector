@@ -157,7 +157,8 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	warn_matched, _ := regexp.MatchString("WARN", log.Output )
 	ok_matched, _   := regexp.MatchString("OK", log.Output ) 
 	
-	b := checks_status_arr[:0]
+	//b := checks_status_arr[:0]
+	var b int
 	update := false
 	new_elem := true
 	for i, elem := range checks_status_arr {
@@ -173,7 +174,8 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 				elem.timestamp = log.Timestamp
 			} else if ok_matched{
 				//delete element if ok
-				b = append(checks_status_arr[:i], checks_status_arr[i+1:])
+				//b = append(checks_status_arr[:i], checks_status_arr[i+1:])
+				b = i
 				update = true	
 				
 			}
@@ -188,7 +190,8 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 				
 	
 	if update {
-		status := l.generateSensuStatus(b)
+		checks_status_arr = append(checks_status_arr[:b], checks_status_arr[b+1:])
+		status := l.generateSensuStatus(checks_status_arr)
 	} else {
 		status := l.generateSensuStatus(checks_status_arr)
 	}
@@ -232,7 +235,7 @@ func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 			condition.Transition = time.Now()
 						
 		} else {
-			out, err := json.Marshal(a)
+			out, err := json.Marshal(logs_arr)
     			if err != nil {
 				panic (fmt.Sprintf("log_monitor: cannot unmarshal struct %v",err))
     				}
