@@ -120,7 +120,21 @@ func (l *SensulogMonitor) Start() (<-chan *types.Status, error) {
 	return l.output, nil
 }
 
-
+// monitorLoop is the main loop of log monitor.
+func (l *SensulogMonitor) monitorLoop() {
+	defer l.tomb.Done()
+	l.initializeStatus()
+	for {
+		select {
+		case log := <-l.logCh:
+			l.parseLog(log)
+		case <-l.tomb.Stopping():
+			l.watcher.Stop()
+			glog.Infof("Log monitor stopped")
+			return
+		}
+	}
+}
 
 // monitorLoop is the main loop of log monitor.
 func (l *logMonitor) monitorLoop() {
