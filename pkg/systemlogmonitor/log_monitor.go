@@ -120,11 +120,6 @@ func (l *SensulogMonitor) Start() (<-chan *types.Status, error) {
 	return l.output, nil
 }
 
-func (l *SensulogMonitor) Stop() {
-	glog.Info("Stop log monitor")
-	l.tomb.Stop()
-}
-
 
 
 // monitorLoop is the main loop of log monitor.
@@ -157,8 +152,8 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 	warn_matched, _ := regexp.MatchString("WARN", log.Output )
 	ok_matched, _   := regexp.MatchString("OK", log.Output ) 
 	
-	//b := checks_status_arr[:0]
-	var b int
+	b := checks_status_arr[:0]
+
 	update := false
 	new_elem := true
 	for i, elem := range checks_status_arr {
@@ -174,8 +169,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 				elem.timestamp = log.Timestamp
 			} else if ok_matched{
 				//delete element if ok
-				//b = append(checks_status_arr[:i], checks_status_arr[i+1:])
-				b = i
+				b = append(checks_status_arr[:i], checks_status_arr[i+1:]...)
 				update = true	
 				
 			}
@@ -190,8 +184,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 				
 	
 	if update {
-		checks_status_arr = append(checks_status_arr[:b], checks_status_arr[b+1:])
-		status := l.generateSensuStatus(checks_status_arr)
+		status := l.generateSensuStatus(b)
 	} else {
 		status := l.generateSensuStatus(checks_status_arr)
 	}
