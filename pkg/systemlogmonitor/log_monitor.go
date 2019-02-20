@@ -62,7 +62,7 @@ type check_store struct {
 var checks_status_arr =  []check_store{}
 
 // NewLogMonitorOrDie create a new LogMonitor, panic if error occurs.
-func NewLogMonitorOrDie(configPath string) types.Monitor {
+func NewSensuLogMonitorOrDie(configPath string) types.Monitor {
 	l := &SensulogMonitor{
 		tomb: tomb.NewTomb(),
 	}
@@ -74,6 +74,7 @@ func NewLogMonitorOrDie(configPath string) types.Monitor {
 	if err != nil {
 		glog.Fatalf("Failed to unmarshal configuration file %q: %v", configPath, err)
 	}
+		
 	// Apply default configurations
 	(&l.config).ApplyDefaultConfiguration()
 	err = l.config.ValidateRules()
@@ -82,6 +83,33 @@ func NewLogMonitorOrDie(configPath string) types.Monitor {
 	}
 	glog.Infof("Finish parsing log monitor config file: %+v", l.config)
 	l.watcher = logwatchers.GetSensuLogWatcherOrDie(l.config.WatcherConfig)
+	l.buffer = NewLogBuffer(l.config.BufferSize)
+	// A 1000 size channel should be big enough.
+	l.output = make(chan *types.Status, 1000)
+	return l
+}
+
+func NewLogMonitorOrDie(configPath string) types.Monitor {
+	l := &logMonitor{
+		tomb: tomb.NewTomb(),
+	}
+	f, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		glog.Fatalf("Failed to read configuration file %q: %v", configPath, err)
+	}
+	err = json.Unmarshal(f, &l.config)
+	if err != nil {
+		glog.Fatalf("Failed to unmarshal configuration file %q: %v", configPath, err)
+	}
+		
+	// Apply default configurations
+	(&l.config).ApplyDefaultConfiguration()
+	err = l.config.ValidateRules()
+	if err != nil {
+		glog.Fatalf("Failed to validate matching rules %+v: %v", l.config.Rules, err)
+	}
+	glog.Infof("Finish parsing log monitor config file: %+v", l.config)
+	l.watcher = logwatchers.GetLogWatcherOrDie(l.config.WatcherConfig)
 	l.buffer = NewLogBuffer(l.config.BufferSize)
 	// A 1000 size channel should be big enough.
 	l.output = make(chan *types.Status, 1000)
