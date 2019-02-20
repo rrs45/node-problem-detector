@@ -154,7 +154,7 @@ func (l *logMonitor) monitorLoop() {
 
 // parseLog parses one log line.
 //EDIT: here we need to match config file for sensu
-func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
+func (l *SensulogMonitor) parseLog(log *logtypes.SensuLog) {
 	// Once there is new log, log monitor will push it into the log buffer and try
 	// to match each rule. If any rule is matched, log monitor will report a status.
 	//fmt.Println("log monitor got new log: %+v", log)
@@ -207,7 +207,7 @@ func (l *logMonitor) parseLog(log *logtypes.SensuLog) {
 
 
 // generateSensuStatus generates status from the logs.
-func (l *logMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
+func (l *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Status {
 	// We use the timestamp of the first log line as the timestamp of the status.
 	
 	//message := generateMessage(logs_arr)
@@ -309,7 +309,7 @@ func (l *logMonitor) generateStatus(logs []*logtypes.Log, rule systemlogtypes.Ru
 }
 
 // initializeStatus initializes the internal condition and also reports it to the node problem detector.
-func (l *logMonitor) initializeStatus() {
+func (l *SensulogMonitor) initializeStatus() {
 	// Initialize the default node conditions
 	l.conditions = initialConditions(l.config.DefaultConditions)
 	glog.Infof("Initialize condition generated: %+v", l.conditions)
