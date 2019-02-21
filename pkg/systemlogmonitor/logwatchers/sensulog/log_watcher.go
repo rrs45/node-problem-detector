@@ -109,7 +109,7 @@ func (s *sensulogWatcher) watchLoop() {
 
 		line, err := s.reader.ReadString('\n')
 		if err != nil && err != io.EOF {
-			glog.Errorf("Exiting filelog watch with error: %v", err)
+			glog.Errorf("Exiting sensulog watch with error: %v", err)
 			return
 		}
 		buffer.WriteString(line)
