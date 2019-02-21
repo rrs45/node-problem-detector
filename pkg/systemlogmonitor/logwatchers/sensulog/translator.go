@@ -86,7 +86,7 @@ func (t *translator) translate(line string) (*logtypes.SensuLog, error) {
 		glog.Infof("Unable to unmarshall line %q", line)
 		return nil, fmt.Errorf("failed to unmarshal line ")
 	} else {
-		glog.Infof("Successfully unmarshaled line %q", line)
+		glog.Infof("Unmarshaled check: %+v; output: %+v", sensulog.Payload.Check.Name,sensulog.Payload.Check.Output)
 	}
 	
 	// Parse timestamp.
