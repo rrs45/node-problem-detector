@@ -130,6 +130,7 @@ func (s *sensulogWatcher) watchLoop() {
 			continue
 		}
 		//maintain last status of all checks seen
+		glog.V(5).Infof("sensulog_log_watcher.go: translator returned : %+v", log)
 		s.logCh <- log
 	}
 }
