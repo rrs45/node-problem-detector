@@ -269,13 +269,7 @@ func (s *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Sta
 						elem.timestamp,
 			))
 		}
-	} else {
-		events = append(events, util.GenerateSensuConditionChangeEvent(
-						"None",
-						"SensuCheckFailed",
-						time.Now(),
-		))
-	}
+	} 
 	
 	// For permanent error changes the condition
 	for i := range s.conditions {
@@ -287,6 +281,9 @@ func (s *SensulogMonitor) generateSensuStatus(logs_arr []check_store) *types.Sta
 	
 		if len(logs_arr) == 0 {
 			condition.Transition = time.Now()
+			condition.Status = types.False
+			condition.Reason = "AllChecksFailed"
+			condition.Message = "All Sensu Checks passed"
 						
 		} else {
 			out, err := json.Marshal(logs_arr)
